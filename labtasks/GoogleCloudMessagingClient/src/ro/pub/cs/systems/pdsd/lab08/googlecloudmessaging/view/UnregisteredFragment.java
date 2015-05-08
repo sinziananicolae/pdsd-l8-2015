@@ -1,5 +1,19 @@
 package ro.pub.cs.systems.pdsd.lab08.googlecloudmessaging.view;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
+
 import ro.pub.cs.systems.pdsd.lab08.googlecloudmessaging.R;
 import ro.pub.cs.systems.pdsd.lab08.googlecloudmessaging.general.Constants;
 import ro.pub.cs.systems.pdsd.lab08.googlecloudmessaging.general.Utilities;
@@ -44,6 +58,24 @@ public class UnregisteredFragment extends Fragment {
 						// - attach the list of parameters to the HttpPost object
 						// - execute the HttpPost request on the HttpClient and get the HttpResponse
 						// - get the code from the status line of the response and return Constants.SUCCESS in case it is 200
+						
+						// DEVICE_REGISTRATION_SERVICE_ADDRESS
+						
+						HttpClient httpClient = new DefaultHttpClient();
+						HttpPost httpPost = new HttpPost(Constants.DEVICE_REGISTRATION_SERVICE_ADDRESS);
+						List<NameValuePair> requestParameters = new ArrayList<NameValuePair>();        
+						requestParameters.add(new BasicNameValuePair(Constants.USERNAME, usernameEditText.getText().toString()));
+						requestParameters.add(new BasicNameValuePair(Constants.EMAIL, emailEditText.getText().toString()));
+						requestParameters.add(new BasicNameValuePair(Constants.REGISTRATION_ID, registrationIdTextView.getText().toString()));
+						
+						UrlEncodedFormEntity encodedForm = new UrlEncodedFormEntity(requestParameters, HTTP.UTF_8);
+						httpPost.setEntity(encodedForm);
+						
+						HttpResponse httpPostResponse = httpClient.execute(httpPost); 
+						
+						if (httpPostResponse.getStatusLine().getStatusCode() == 200) {
+							return Constants.SUCCESS;
+						}
 
 					} catch (Exception exception) {
 						Log.e(Constants.TAG, "An exception has occurred: " + exception.getMessage());
